@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AI Tools Guide — INFO HUB</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    /* Small page-scoped styles (won't overwrite your global style much) */
+    .container { max-width:1100px; margin:28px auto; padding:18px; background:rgba(137, 195, 241, 0.02); border-radius:12px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; }
+    h1 { margin:0; color:#bfefff }
+    .tool { border-radius:10px; padding:20px; margin:14px 0; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); }
+    .tool h2 { margin:0 0 8px 0; color:#fff; font-size:20px; }
+    .section { margin:8px 0; color:var(--muted, #cfd8e3); line-height:1.5; }
+    .btn { display:inline-block; padding:8px 10px; border-radius:8px; margin-right:8px; border:none; cursor:pointer; background:#38bdf8; color:#012; font-weight:600; }
+    .small { font-size:13px; color:#9fb6c9 }
+    .controls { display:flex; gap:8px; align-items:center; }
+    .copyBtn, .speakBtn { background:#7dd3fc; color:#022; }
+    .code { background:rgba(0,0,0,0.25); padding:8px; border-radius:6px; font-family:monospace; white-space:pre-wrap; }
+    .usage-list { margin:6px 0 6px 18px; }
+    .note { background:rgba(255,255,255,0.02); border-left:3px solid #fb7185; padding:8px; border-radius:6px; margin-top:10px; color:#ffd6d6 }
+    .lang-select { padding:6px 8px; border-radius:8px; background:transparent; color:var(--muted,#cfd8e3); border:1px solid rgba(255,255,255,0.06) }
+    .flex-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="top">
+      <h1 id="pageTitle">AI Tools Guide</h1>
+      <div class="controls">
+        <label for="langTool" class="small" style="margin-right:8px">Language</label>
+        <select id="langTool" class="lang-select" aria-label="Select language">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+        <button onclick="window.location='/'" class="btn small">⬅ Go back</button>
+      </div>
+    </div>
+
+    <p class="small" id="introLine">Choose a tool below to read beginner → advanced steps, prompt examples, and best practices.</p>
+
+    <div id="toolsArea"></div>
+
+    <div class="note small" id="disclaimer">
+      Note: This page provides practical steps and examples. For production usage check each provider's official docs and terms, and secure API keys carefully.
+    </div>
+  </div>
+
+<script>
+/* --------------------------
+   Multilingual instructional content (English / Hindi / Kannada)
+   Add or edit text here to customize guide content.
+   -------------------------- */
+const TOOLS = {
+  chatgpt: {
+    title: { en:"ChatGPT (OpenAI)", hi:"ChatGPT (OpenAI)", kn:"ChatGPT (OpenAI)" },
+    short: {
+      en: "Large conversational LLM by OpenAI. Best for chat, drafts, code, and explanations.",
+      hi: "OpenAI का संवादात्मक LLM। चैट, ड्राफ्ट, कोड और व्याख्याओं के लिए अच्छा।",
+      kn: "OpenAI ನ ಸಂಕಾಮಾತ್ಮಕ LLM. ಚಾಟ್, ಡ್ರಾಫ್ಟ್, ಕೋಡ್ ಮತ್ತು ವಿವರಣೆಗಳಿಗೆ ಉತ್ತಮ."
+    },
+    steps: {
+      en: [
+        { title: "Step 1", text: "Open openai.com or the ChatGPT web app and sign in or create an account." },
+        { title: "Step 2", text: "Choose the chat interface and set the conversation context if needed (system instruction)." },
+        { title: "Step 3", text: "Decide the goal (e.g., explain, summarize, generate code) before typing the prompt." },
+        { title: "Step 4", text: "Write a clear prompt: state the task, audience, format, and length expectations." },
+        { title: "Step 5", text: "Provide examples or sample input when you want a consistent output format." },
+        { title: "Step 6", text: "Ask follow-up questions or request revisions to refine the answer." },
+        { title: "Step 7", text: "When asking for code, include inputs and desired edge cases to test." },
+        { title: "Step 8", text: "If you need citations or facts, ask explicitly for sources or references." },
+        { title: "Step 9", text: "Use the API keys in backend code for automation, storing keys securely (never in frontend)." },
+        { title: "Step 10", text: "Review output for correctness, iterate as needed, and track usage/costs when using the API." }
+      ],
+      hi: [
+        { title: "Step 1", text: "openai.com या ChatGPT वेब ऐप खोलें और साइन इन या अकाउंट बनाएं।" },
+        { title: "Step 2", text: "चैट इंटरफ़ेस चुनें और जरूरत हो तो सिस्टम निर्देश सेट करें।" },
+        { title: "Step 3", text: "टास्क का लक्ष्य तय करें (जैसे समझाना, सारांश, कोड)।" },
+        { title: "Step 4", text: "स्पष्ट प्रॉम्प्ट लिखें: काम, दर्शक, फॉर्मैट और लंबाई बताएं।" },
+        { title: "Step 5", text: "नियत फॉर्मैट चाहिये तो उदाहरण दें।" },
+        { title: "Step 6", text: "उत्तर सुधरवाने के लिए फॉलो-अप पूछें।" },
+        { title: "Step 7", text: "कोड के लिए इनपुट और टेस्ट मामलों को शामिल करें।" },
+        { title: "Step 8", text: "स्रोत चाहिए तो स्पष्ट रूप से स्रोत माँगे।" },
+        { title: "Step 9", text: "ऑटोमेशन के लिए API कुंजी बैकएंड में इस्तेमाल करें और सुरक्षित रखें।" },
+        { title: "Step 10", text: "आउटपुट की जाँच करें, आवश्यकतानुसार पुनरावृत्त करें और API लागत देखें।" }
+      ],
+      kn: [
+        { title: "Step 1", text: "openai.com ಅಥವಾ ChatGPT ವೆಬ್‌ಅ್ಯಪ್ ತೆರೆಯಿರಿ ಮತ್ತು ಸೈನ್ ಇನ್/ಖಾತೆ ರಚಿಸಿ." },
+        { title: "Step 2", text: "ಚಾಟ್ ಇಂಟರ್ಫೇಸ್ ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಅಗತ್ಯವಾದರೆ ಸಿಸ್ಟಮ್ ಸೂಚನೆ ನೀಡಿರಿ." },
+        { title: "Step 3", text: "ಕಾರ್ಯ ಉದ್ದೇಶವನ್ನು ನಿರ್ಧರಿಸಿ (ವಿವರಣೆ, ಸಾರಾಂಶ, ಕೋಡ್ ಇತ್ಯಾದಿ)." },
+        { title: "Step 4", text: "ಸ್ಪಷ್ಟ ಪ್ರಾಂಪ್ಟ್ ಬರೆಯಿರಿ: ಕೆಲಸ, ಪ್ರೇಕ್ಷಕರು, ಫಾರ್ಮಾಟ್ ಮತ್ತು ಉದ್ದೇಶ ತಿಳಿಸಿ." },
+        { title: "Step 5", text: "ಒಂದು ನಿರ್ದಿಷ್ಟ ಫಾರ್ಮಾಟ್ ಬೇಕಾದರೆ ಉದಾಹರಣೆಗಳನ್ನು ಒದಗಿಸಿ." },
+        { title: "Step 6", text: "ಉತ್ತರ ಸುಧಾರಿಸಲು ಫಾಲೋಅಪ್ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ." },
+        { title: "Step 7", text: "ಕೋಡ್ ಆಗಿರುವಲ್ಲಿ ಇನ್‌ಪುಟ್ ಮತ್ತು ಟೆಸ್ಟ್ ಪ್ರಕರಣಗಳನ್ನು ಸೇರಿಸಿ." },
+        { title: "Step 8", text: "ಉಲ್ಲೇಖಗಳು ಬೇಕಾದರೆ ಸ್ಪಷ್ಟವಾಗಿ ಕೋರಿಕೆ ಮಾಡಿ." },
+        { title: "Step 9", text: "ಸ್ವಯಂಪೂರ್ತಿಗೆ API ಕೀಗಳನ್ನು ಬ್ಯಾಕ್‌ಎಂಡ್‌ನಲ್ಲಿ ಬಳಸಿರಿ ಮತ್ತು ಸುರಕ್ಷಿತವಾಗಿರಿಸಿ." },
+        { title: "Step 10", text: "ಔಟ್‌ಪುಟ್ ಪರಿಶೀಲಿಸಿ, ಚಿತ್ರಣಗಳನ್ನು ತಿದ್ದುಕೊಡಿ ಮತ್ತು ಬಳಕೆ-ಖರ್ಚು ಗಮನಿಸಿ." }
+      ]
+    },
+    usecases: {
+      en:["Draft emails & docs","Code assistance & debugging","Summaries & Q&A","Brainstorming prompts"],
+      hi:["ईमेल/दस्तावेज ड्राफ्ट","कोड सहायता","सारांश और प्रश्नोत्तरी"],
+      kn:["ಇಮೇಲ್/ಡಾಕ್ಯುಮೆಂಟ್ ಡ್ರಾಫ್ಟ್","ಕೋಡ್ ಸಹಾಯ","ಸಂಗ್ರಹಗಳು ಮತ್ತು ಪ್ರಶ್ನೋತ್ತರ"]
+    },
+    prompt_example: {
+      en: "Explain the difference between supervised and unsupervised learning in 3 bullet points for a beginner.",
+      hi: "सुपरवाइज़्ड और अनसुपरवाइज़्ड लर्निंग में क्या अंतर है? 3 बुलेट में सरल भाषा में बताइए।",
+      kn: "Supervised ಮತ್ತು Unsupervised learningನ ನಡುವಿನ ವ್ಯತ್ಯಾಸವನ್ನು ಆರಂಭಿಕರಿಗಾಗಿ 3 ಪುಟಿಕೆಯಲ್ಲಿ ವಿವರಿಸಿ."
+    }
+  },
+
+  claude: {
+    title: { en:"Claude (Anthropic)", hi:"Claude (Anthropic)", kn:"Claude (Anthropic)" },
+    short: {
+      en: "Assistant designed with safety and helpfulness in mind; good for long-form reasoning.",
+      hi: "सुरक्षा और सहायकता पर ध्यान देने वाला सहायक; लॉन्ग-फॉर्म तर्क के लिए उपयोगी।",
+      kn: "ಸುರಕ್ಷತೆ ಮತ್ತು ಸಹಾಯಕತೆಗೆ ಎಡಗು ನೀಡುವ ಸಹಾಯಕ; ದೀರ್ಘ-ರೂಪದ ಯುಕ್ತಿವಾದಕ್ಕೆ ಒಳ್ಳೆಯದು."
+    },
+    steps: {
+      en: [
+        { title: "Step 1", text: "Open Claude's web UI or partner site and sign in or register." },
+        { title: "Step 2", text: "Set the assistant style or safety preferences if available." },
+        { title: "Step 3", text: "Clearly state the task and any constraints (length, tone, format)." },
+        { title: "Step 4", text: "Provide background context or documents to improve relevance." },
+        { title: "Step 5", text: "Ask the assistant to reason step-by-step when complex reasoning is needed." },
+        { title: "Step 6", text: "Request structured output (tables, JSON) for programmatic use." },
+        { title: "Step 7", text: "Iterate — request clarifications, shorten or expand answers as needed." },
+        { title: "Step 8", text: "When accuracy matters, ask for citations or source notes." },
+        { title: "Step 9", text: "Use API integration for automated workflows keeping safety settings intact." },
+        { title: "Step 10", text: "Validate outputs and log interactions for auditing and improvement." }
+      ],
+      hi: [
+        { title: "Step 1", text: "Claude की वेबसाइट या पार्टनर UI खोलें और साइन इन करें।" },
+        { title: "Step 2", text: "मौजूद हो तो सुरक्षा/शैली सेटिंग्स चुनें।" },
+        { title: "Step 3", text: "कार्य और सीमाएँ स्पष्ट रूप से बताएं (लंबाई, टोन)।" },
+        { title: "Step 4", text: "संदर्भ दस्तावेज़ दें ताकि परिणाम सटीक हों।" },
+        { title: "Step 5", text: "जटिल समस्याओं के लिए चरण-दर-चरण समझाने की माँग करें।" },
+        { title: "Step 6", text: "वांछित फॉर्मेट (JSON/टेबल) मांगे।" },
+        { title: "Step 7", text: "आउटपुट को तदनुसार संशोधित करवाएँ।" },
+        { title: "Step 8", text: "सत्यापन के लिये स्रोत माँगे।" },
+        { title: "Step 9", text: "API के जरिए ऑटोमेशन करें और सुरक्षा बनाए रखें।" },
+        { title: "Step 10", text: "आउटपुट की जाँच कर के रिकॉर्ड रखें।" }
+      ],
+      kn: [
+        { title: "Step 1", text: "Claude ವೆಬ್ UI ಅಥವಾ ಪಾಲುದಾರ ಸೈಟ್ ತೆರೆಯಿರಿ ಮತ್ತು ಸೈನ್ ಇನ್ ಮಾಡಿ." },
+        { title: "Step 2", text: "ಲಭ್ಯವಿದ್ದರೆ ಸುರಕ್ಷತೆ/ಶೈಲಿ ಸ್ಥಾಪನೆ ಮಾಡಿರಿ." },
+        { title: "Step 3", text: "ಕಾರ್ಯ ಮತ್ತು ನಿರ್ಬಂಧಗಳನ್ನು ಬರೆಬಾಗಿ ತಿಳಿಸಿ (ಉದಾಹರಣೆ: ಉದ್ದ, ಶೈಲಿ)." },
+        { title: "Step 4", text: "ಪ್ರಸಂಗ ಪೇಶಾವಳಿ ಅಥವಾ ದಾಖಲೆಗಳನ್ನು ಒದಗಿಸಿ." },
+        { title: "Step 5", text: "ಸಂಕೀರ್ಣ ವಿಚಾರಗಳಿಗೆ ಹಂತವಾಗಿ ವಿವರಣೆ ಕೇಳಿ." },
+        { title: "Step 6", text: "ಕೋಡ್ ಅಥವಾ ಪ್ರೋಗ್ರಾಮ್ಯ ಫಾರ್ಮ್ಯಾಟ್ (JSON) ಕೇಳಿ." },
+        { title: "Step 7", text: "ಉತ್ತರವನ್ನು ಸಂಶೋಧಿಸಿ ಮತ್ತು ತಿದ್ದುಕೊಂಡಿ." },
+        { title: "Step 8", text: "ಆಧಾರಪಡಿಸಲು ಉಲ್ಲೇಖಗಳಿಗಾಗಿ ಕೇಳಿ." },
+        { title: "Step 9", text: "API ಮೂಲಕ ಕಾರ್ಯಗಳನ್ನು ಸ್ವಯಂ ಚಲನೆಗೊಳಿಸಿ ಮತ್ತು ಸುರಕ್ಷತೆ ಕಾಪಾಡಿ." },
+        { title: "Step 10", text: "ಔಟ್‌ಪುಟ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಲಾಗ್ ಮಾಡಿ." }
+      ]
+    },
+    usecases: { en:["Research & long summaries"], hi:["शोध व सारांश"], kn:["ಸಂಶೋಧನೆ ಮತ್ತು ಸಾರಾಂಶ"] },
+    prompt_example: { en:"Summarize this research paper in 5 bullets.", hi:"इस पेपर का 5 बिंदुओं में सार दें।", kn:"ಈ ಸಂಶೋಧನಾ ಪತ್ರಿಕೆಯನ್ನು 5 ಬಿಂದುಗಳಲ್ಲಿ ಸಾರಾಂಶಿಸಿ." }
+  },
+
+  deepseek: {
+    title: { en:"DeepSeek", hi:"DeepSeek", kn:"DeepSeek" },
+    short: {
+      en: "Search and code-assistant for developer queries; use code context for better results.",
+      hi: "डेवलपर प्रश्नों के लिए सर्च और कोड असिस्टेंट; कोड संदर्भ दें।",
+      kn: "ಡೆവಲಪರ್ ಪ್ರಶ್ನೆಗಳಿಗೆ ಹುಡುಕಾಟ ಮತ್ತು ಕೋಡ್ ಸಹಾಯಕ; ಕೋಡ್ ಸನ್ನಿವೇಶ ನೀಡಿರಿ."
+    },
+    steps: {
+      en: [
+        { title: "Step 1", text: "Open DeepSeek UI or code-search tool and sign in if required." },
+        { title: "Step 2", text: "Point the tool to the repository or paste code snippets for context." },
+        { title: "Step 3", text: "Use concise natural-language queries describing the function or bug." },
+        { title: "Step 4", text: "Include filenames, function names or sample inputs to narrow results." },
+        { title: "Step 5", text: "Review returned snippets and check surrounding lines for context." },
+        { title: "Step 6", text: "Ask for examples of usage, edge-cases, or suggested fixes." },
+        { title: "Step 7", text: "When possible, run suggested fixes locally and test." },
+        { title: "Step 8", text: "Use filters (language, repo, date) to refine searches." },
+        { title: "Step 9", text: "Integrate indexing into CI to keep search results fresh." },
+        { title: "Step 10", text: "Document resolved cases and share snippets with the team." }
+      ],
+      hi: [
+        { title: "Step 1", text: "DeepSeek UI खोलें और अगर आवश्यक हो तो साइन इन करें।" },
+        { title: "Step 2", text: "रीपो या कोड स्निपेट दें ताकि संदर्भ मिले।" },
+        { title: "Step 3", text: "संक्षिप्त स्वाभाविक भाषा प्रश्न पूछें (फंक्शन/बग)।" },
+        { title: "Step 4", text: "फाइल या फंक्शन नाम और इनपुट दें।" },
+        { title: "Step 5", text: "रिटर्न किए गए स्निपेट्स के आसपास की लाइनों को देखें।" },
+        { title: "Step 6", text: "उपयोग उदाहरण, किन्हीं किन्हीं मामलोँ के लिए पूछें।" },
+        { title: "Step 7", text: "सुझाए गए फिक्स लोकल में चलाकर टेस्ट करें।" },
+        { title: "Step 8", text: "फिल्टर का उपयोग कर परिणाम संकुचित करें।" },
+        { title: "Step 9", text: "CI में इंडेक्सिंग जोड़ें ताकि परिणाम ताज़ा रहें।" },
+        { title: "Step 10", text: "समाधान संचित करें और टीम के साथ साझा करें।" }
+      ],
+      kn: [
+        { title: "Step 1", text: "DeepSeek UI ಅನ್ನು ತೆರೆಯಿರಿ ಮತ್ತು ಅಗತ್ಯವಿದ್ದರೆ ಸೈನ್ ಇನ್ ಮಾಡಿ." },
+        { title: "Step 2", text: "ರಿಪೊ ಅಥವಾ ಕೋಡ್ ಸ್ನಿಪೆಟ್‌ಗಳನ್ನು ನೀಡಿರಿ." },
+        { title: "Step 3", text: "ಸಂಕ್ಷಿಪ್ತ ನೈಸರ್ಗಿಕ ಭಾಷೆ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಿ (ಫಂಕ್ಷನ್/ಬಗ್)." },
+        { title: "Step 4", text: "ಫೈಲ್/ಫಂಕ್ಷನ್ ಹೆಸರು ಮತ್ತು ಉದಾಹರಣಾ ಇನ್‌ಪುಟ್ ನೀಡಿ." },
+        { title: "Step 5", text: "ಹಿಂದಿನ ಮತ್ತು ಮುಂದಿನ ಸಾಲುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ." },
+        { title: "Step 6", text: "ಬಳಕೆ ಉದಾಹರಣೆಗಳು ಮತ್ತು ಎಡ್ಜ್‌ಕೇಸ್ ಕೇಳಿ." },
+        { title: "Step 7", text: "ಸಲಹೆ ಫಿಕ್ಸ್‌ಗಳನ್ನು ಲೊಕಲ್‌ನಲ್ಲಿ ಪ್ರಯೋಗಿಸಿ." },
+        { title: "Step 8", text: "ಭಾಷೆ/রিepo/ದಿನಾಂಕ ಮೂಲಕ ಫಿಲ್ಟರ್ ಮಾಡಿ." },
+        { title: "Step 9", text: "CI ನಲ್ಲಿ ಇಂಡೆಕ್ಸಿಂಗ್ ಸೇರಿಸಿ." },
+        { title: "Step 10", text: "ಉತ್ತರಗಳನ್ನು ಡಾಕ್ಯುಮೆಂಟ್ ಮಾಡಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ." }
+      ]
+    },
+    usecases: { en:["Code search","Stacktrace debugging"], hi:["कोड खोज","डिबग"], kn:["ಕೋಡ್ ಹುಡುಕಾಟ","ಡಿಬಗ್"] },
+    prompt_example: { en:"Find usages of function `processOrder` in this repo and show examples.", hi:"`processOrder` का उपयोग कहां है दिखाइए।", kn:"ಈ ರೆಪೊದಲ್ಲಿ `processOrder` ಉಪಯೋಗಗಳು ಎಲ್ಲಿವೆ ತೋರಿಸಿ." }
+  },
+
+  gemini: {
+    title: { en:"Gemini (Google)", hi:"Gemini (Google)", kn:"Gemini (Google)" },
+    short: {
+      en: "Google's multimodal assistant for text and images; useful for research-style queries.",
+      hi: "Google का मल्टीमॉडल सहायक — टेक्स्ट व इमेज सपोर्ट।",
+      kn: "Google ನ ಬಹುಮಾಧ್ಯಮ ಸಹಾಯಕ (ಪಠ್ಯ+ಚಿತ್ರ)."
+    },
+    steps: {
+      en: [
+        { title: "Step 1", text: "Open Google's Gemini interface or integrated tool and sign in." },
+        { title: "Step 2", text: "Provide a clear question and attach images or URLs for multimodal queries." },
+        { title: "Step 3", text: "Specify expected output type (summary, list, code, explanation)." },
+        { title: "Step 4", text: "Request sources or evidence when facts are needed." },
+        { title: "Step 5", text: "Use follow-up prompts to refine or narrow the scope." },
+        { title: "Step 6", text: "For images, point out regions of interest or ask for captions." },
+        { title: "Step 7", text: "If using Google Cloud, set up appropriate API credentials and permissions." },
+        { title: "Step 8", text: "Validate any factual claims with original sources." },
+        { title: "Step 9", text: "Use batch queries for repeated tasks to save time." },
+        { title: "Step 10", text: "Monitor usage and secure API keys in backend services." }
+      ],
+      hi: [
+        { title: "Step 1", text: "Gemini या संबंधित UI खोलें और साइन इन करें।" },
+        { title: "Step 2", text: "साफ़ सवाल दें और ज़रूरत हो तो इमेज/URL जोड़ें।" },
+        { title: "Step 3", text: "आउटपुट प्रकार (सार, सूची, कोड) बताएं।" },
+        { title: "Step 4", text: "स्रोत माँगें यदि तथ्य व प्रमाण चाहिए।" },
+        { title: "Step 5", text: "फॉलो-अप से दायरा संकुचित करें।" },
+        { title: "Step 6", text: "इमेज के हिस्से पर सवाल पूछें (कैप्शन/डिटेल)।" },
+        { title: "Step 7", text: "Google Cloud में API क्रेडेंशियल सेट करें।" },
+        { title: "Step 8", text: "तथ्याँचन के लिए मूल स्रोत देखें।" },
+        { title: "Step 9", text: "रिपीट कामों के लिए बैच क्वेरी का उपयोग करें।" },
+        { title: "Step 10", text: "API उपयोग और कुंजियों की सुरक्षा पर नज़र रखें।" }
+      ],
+      kn: [
+        { title: "Step 1", text: "Gemini ಅಥವಾ ಅದಿನ ಸಂಯೋಜಿತ ಟೂಲ್ ತೆರೆಯಿರಿ ಮತ್ತು ಸೈನ್ ಇನ್ ಮಾಡಿ." },
+        { title: "Step 2", text: "ಸ್ಪಷ್ಟ ಪ್ರಶ್ನೆ ನೀಡಿರಿ ಮತ್ತು ಅಗತ್ಯವಿದ್ದರೆ ಚಿತ್ರಗಳು/URLಗಳನ್ನು ಜೋಡಿಸಿರಿ." },
+        { title: "Step 3", text: "ಆಗಲಿರುವ ಫಾರ್ಮ್ಯಾಟ್ (ಸಾರಾಂಶ, ಪಟ್ಟಿ, ಕೋಡ್) ತಿಳಿಸಿ." },
+        { title: "Step 4", text: "ತಥ್ಯಗಳಿಗೆ ಉಲ್ಲೇಖಗಳನ್ನು ಕೇಳಿ." },
+        { title: "Step 5", text: "ಫಾಲೋ-ಅಪ್ ಮೂಲಕ ವ್ಯಾಪ್ತಿಯನ್ನು ಚಿಕಿತ್ಸಿಸಿ." },
+        { title: "Step 6", text: "ಚಿತ್ರಗಳಿಗಾಗಿ ವಿಶೇಷ ಭಾಗಗಳನ್ನು ಸೂಚಿಸಿ." },
+        { title: "Step 7", text: "Google Cloud ನಲ್ಲಿ API ಅನುಮತಿಗಳನ್ನು ರಚಿಸಿ." },
+        { title: "Step 8", text: "ಉಲ್ಲೇಖಗಳೊಂದಿಗೆ ವಾಸ್ತವದ ಪರಿಶೀಲನೆ ಮಾಡಿ." },
+        { title: "Step 9", text: "ಮರುಕೈಗೆ ಬರುತ್ತಿರುವ ಕಾರ್ಯಗಳಿಗೆ ಬ್ಯಾಚ್ ಬಳಸಿ." },
+        { title: "Step 10", text: "ಬಳಕೆ ಮತ್ತು API ಕೀಲಿಗಳ ಭದ್ರತೆ ಪರಿಶೀಲಿಸಿ." }
+      ]
+    },
+    usecases: { en:["Multimodal search","Image + text tasks"], hi:["इमेज+टेक्स्ट"], kn:["ಚಿತ್ರ + ಪಠ್ಯ"] },
+    prompt_example: { en:"Summarize this webpage and list 3 sources.", hi:"इस वेबपेज का सार और 3 स्रोत बताइए।", kn:"ಈ ವೆಬ್ ಪೇಜ್ ಅನ್ನು ಸಾರಾಂಶಿಸಿ ಮತ್ತು 3 ಮೂಲಗಳನ್ನು ಸೂಚಿಸಿ." }
+  },
+
+  perplexity: {
+    title: { en:"Perplexity", hi:"Perplexity", kn:"Perplexity" },
+    short: {
+      en: "Search+LLM hybrid giving concise answers with source links — good for factual queries.",
+      hi: "स्रोतों के साथ संक्षिप्त उत्तर देता है — तथ्यात्मक प्रश्नों के लिए उपयोगी।",
+      kn: "ಮೂಲಗಳ ಜೊತೆ ಸಾಂಕ್ಷಿಪ್ತ ಉತ್ತರಗಳನ್ನು ನೀಡುತ್ತದೆ — ತಥ್ಯ ಪ್ರಶ್ನೆಗಳಿಗೆ ಸೂಕ್ತ."
+    },
+    steps: {
+      en: [
+        { title: "Step 1", text: "Open Perplexity and enter a factual question or query." },
+        { title: "Step 2", text: "Inspect the provided answer and the cited source links." },
+        { title: "Step 3", text: "Use follow-up questions to get more depth or alternate perspectives." },
+        { title: "Step 4", text: "When using for research, collect and archive the source links." },
+        { title: "Step 5", text: "Cross-check claims by opening the cited pages directly." },
+        { title: "Step 6", text: "Adjust query phrasing to narrow or broaden results." },
+        { title: "Step 7", text: "Use the tool iteratively to build a concise report or summary." },
+        { title: "Step 8", text: "For large tasks, split questions into smaller subtasks." },
+        { title: "Step 9", text: "If integrating programmatically, use available APIs or export features." },
+        { title: "Step 10", text: "Verify provenance and prefer primary sources for critical decisions." }
+      ],
+      hi: [
+        { title: "Step 1", text: "Perplexity खोलकर अपना प्रश्न टाइप करें।" },
+        { title: "Step 2", text: "उत्तर और दिए गए स्रोतों की जाँच करें।" },
+        { title: "Step 3", text: "गहराई के लिए फॉलो-अप पूछें।" },
+        { title: "Step 4", text: "शोध के लिए स्रोतों को संग्रहित करें।" },
+        { title: "Step 5", text: "दावों की पुष्टि के लिए स्रोत खोलें।" },
+        { title: "Step 6", text: "प्रश्न फेर-बदल कर परिणाम बदलें।" },
+        { title: "Step 7", text: "संक्षिप्त रिपोर्ट बनाते समय पुनरावृत्ति करें।" },
+        { title: "Step 8", text: "बड़े कार्यों को छोटे भागों में विभाजित करें।" },
+        { title: "Step 9", text: "API या एक्सपोर्ट विकल्पों का उपयोग करें।" },
+        { title: "Step 10", text: "महत्वपूर्ण निर्णयों के लिए प्राथमिक स्रोत चुनें।" }
+      ],
+      kn: [
+        { title: "Step 1", text: "Perplexity ತೆರೆಯಿರಿ ಮತ್ತು ನಿಮ್ಮ ಪ್ರಶ್ನೆ ಹಾಕಿರಿ." },
+        { title: "Step 2", text: "ಉತ್ತರ ಮತ್ತು ಉಲ್ಲೇಖಿಸಿರುವ ಮೂಲಗಳ ಪರಿಶೀಲನೆ ಮಾಡಿ." },
+        { title: "Step 3", text: "ಹೆಚ್ಚಿನ ವಿವರಕ್ಕೆ ಫಾಲೋ-ಅಪ್ ಕೇಳಿ." },
+        { title: "Step 4", text: "ಗವೇಶಣೆಗೆ ಮೂಲಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ." },
+        { title: "Step 5", text: "ದಾವಿಗಳನ್ನು ತಟಸ್ಥವಾಗಿ ಪರಿಶೀಲಿಸಲು ಮೂಲಗಳನ್ನು ತೆರೆಯಿರಿ." },
+        { title: "Step 6", text: "ಪ್ರಶ್ನೆಯನ್ನು ಮರುಘಟ್ಟಿಸಿ ಫಲಿತಾಂಶಗಳನ್ನು ಬದಲಾಯಿಸಿ." },
+        { title: "Step 7", text: "ಸಂಕ್ಷಿಪ್ತ ವರದಿ ರಚಿಸಲು ಜಾರಿಮಾಡಿ." },
+        { title: "Step 8", text: "ವಿಶಾಲ ಕಾರ್ಯಗಳು ಇದ್ದರೆ ಅವುಗಳನ್ನು ಉಪಪ್ರಶ್ನೆಗಳಲ್ಲಿ ವಿಭಜಿಸಿ." },
+        { title: "Step 9", text: "API ಅಥವಾ ರಫ್ತ್ ವಿಧಾನಗಳೊಂದಿಗೆ ಇಂಟಿಗ್ರೇಟ್ ಮಾಡಿ." },
+        { title: "Step 10", text: "ಗುರಿ ತೀರ್ಮಾನಕೆ ಪ್ರಾಥಮಿಕ ಮೂಲಗಳನ್ನು ಆಧರಿಸಿ." }
+      ]
+    },
+    usecases: { en:["Fact-checking","Quick answers with sources"], hi:["तत्त्व-जाँच"], kn:["ತಥ್ಯ-ಪರಿಶೀಲನೆ"] },
+    prompt_example: { en:"What are the latest specs of the Raspberry Pi 5? Provide sources.", hi:"Raspberry Pi 5 के नवीनतम स्पेसिफिकेशन और स्रोत बताइए।", kn:"Raspberry Pi 5 ನ ಹೊಸ ವಿವರಣೆಗಳನ್ನು ಮೂಲದೊಂದಿಗೆ ನೀಡಿ." }
+  },
+
+  llama: {
+    title: { en:"LLaMA (Meta) / Llama Family", hi:"LLaMA (Meta)", kn:"LLaMA (Meta)" },
+    short: {
+      en: "Research and self-hosted models for fine-tuning and private inference.",
+      hi: "अनुसंधान और लोकल मॉडल — फाइन-ट्यून और प्राइवेट इंफरेंस के लिए।",
+      kn: "ಗವೇಷಣೆ ಮತ್ತು ಸ್ವಂತ-ಹೋಸ್ಟ್ ಮಾಡಲಾದ ಮಾದರಿಗಳು."
+    },
+    steps: {
+      en: [
+        { title: "Step 1", text: "Choose a hosted demo or download a LLaMA variant from a trusted source." },
+        { title: "Step 2", text: "If running locally, prepare hardware (GPU) and dependencies." },
+        { title: "Step 3", text: "Load the model with recommended libraries (transformers or vendor SDK)." },
+        { title: "Step 4", text: "Prepare domain data and format it as Q&A or examples for fine-tuning." },
+        { title: "Step 5", text: "Fine-tune or adapt using small batches and validate outputs." },
+        { title: "Step 6", text: "Quantize or optimize the model for efficient inference if needed." },
+        { title: "Step 7", text: "Build a simple API or app to serve your model securely." },
+        { title: "Step 8", text: "Test for hallucinations and correct biases with evaluation datasets." },
+        { title: "Step 9", text: "Monitor performance and update training data periodically." },
+        { title: "Step 10", text: "Document usage policies, data provenance and keep models patched." }
+      ],
+      hi: [
+        { title: "Step 1", text: "विश्वसनीय स्रोत से LLaMA वेरिएंट चुनें या होस्टेड डेमो उपयोग करें।" },
+        { title: "Step 2", text: "लोकल पर चलाने के लिए GPU और आवश्यकताएँ तैयार करें।" },
+        { title: "Step 3", text: "लाइब्रेरी के साथ मॉडल लोड करें (जैसे transformers)।" },
+        { title: "Step 4", text: "डोमेन डेटा तैयार कर फाइन-ट्यून के लिए फॉर्मैट करें।" },
+        { title: "Step 5", text: "छोटे बैच में फाइन-ट्यून करें और परिणाम मान्य करें।" },
+        { title: "Step 6", text: "इफिशिएंसी के लिए क्वांटाइज़ करें।" },
+        { title: "Step 7", text: "सुरक्षित तरीके से मॉडल सर्व करने के लिए API बनाएं।" },
+        { title: "Step 8", text: "हेल्लुसीनेशन और बायस की जाँच करें।" },
+        { title: "Step 9", text: "प्रदर्शन मॉनिटर करें और डेटा अपडेट रखें।" },
+        { title: "Step 10", text: "उपयोग नीतियाँ और डेटा स्रोत दस्तावेज़ करें।" }
+      ],
+      kn: [
+        { title: "Step 1", text: "ನಂಬಬಹುದಾದ ಮೂಲದಿಂದ LLaMA ಆವೃತ್ತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ಹೋಸ್ಟೆಡ್ ಡೆಮೋ ಬಳಸಿ." },
+        { title: "Step 2", text: "ಲೊಕಲ್‌ನಲ್ಲಿ ಚಾಲನೆಗೆ GPU ಮತ್ತು ಅವಶ್ಯಕತೆಗಳನ್ನು ಸಿದ್ಧಮಾಡಿ." },
+        { title: "Step 3", text: "transformers ಅಥವಾ ನಿರ್ದಿಷ್ಟ SDK ಮೂಲಕ ಮಾದರಿಯನ್ನು ಲೋಡ್ ಮಾಡಿ." },
+        { title: "Step 4", text: "ಡೊಮೇನ್ ಡೇಟಾವನ್ನು Q&A ಅಥವಾ ಉದಾಹರಣೆಯಾಗಿ ತಯಾರಿಸಿ." },
+        { title: "Step 5", text: "ಚಿಕ್ಕ ಬ್ಯಾಚ್‌ಗಳ ಮೂಲಕ ಫೈನ್-ಟ್ಯೂನ್ ಮಾಡಿ ಮತ್ತು ಮೌಲ್ಯಾಂಕನ ಮಾಡಿ." },
+        { title: "Step 6", text: "ಗುಣಮಟ್ಟಕ್ಕಾಗಿ ಮಾದರಿಯನ್ನು ಕ್ವಾಂಟೈಜ್ ಮಾಡಿ." },
+        { title: "Step 7", text: "ನಿಮ್ಮ ಮಾದರಿಯನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸೇವೆಗಾಗಿ API ರಚಿಸಿ." },
+        { title: "Step 8", text: "ಹಲ್ಲುಸಿನೇಷನ್ ಮತ್ತು ಬಯಾಸ್ ಪರಿಶೀಲನೆ ಮಾಡಿ." },
+        { title: "Step 9", text: "ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಮಾನ್ಯ ಮಾಡಿ ಮತ್ತು ತರಬೇತಿ ಡೇಟಾವನ್ನು ನವೀಕರಿಸಿ." },
+        { title: "Step 10", text: "ಬಳಕೆ ನೀತಿ ಮತ್ತು ಡೇಟಾ ಮೂಲದ ದಾಖಲೆಗಳನ್ನು ನವೀಕರಿಸಿ." }
+      ]
+    },
+    usecases: { en:["On-prem inference","Research & fine-tuning"], hi:["अनुसंधान/निजी उपयोग"], kn:["ಗವೇಷಣೆ/ಸ್ವಂತ ಹೋಸ್ಟ್"] },
+    prompt_example: { en:"Fine-tune a small LLaMA on Q&A pairs for your domain.", hi:"डोमेन Q&A के लिए फाइन-ट्यून करें।", kn:"ನಿಮ್ಮ ಡೊಮೇನ್ಗಾಗಿ Q&A ಜೊಡಿಗಳಲ್ಲಿ ಫೈನ್-ಟ್ಯೂನ್ ಮಾಡಿ." }
+  }
+};
+
+
+
+/* --- UI rendering logic --- */
+function renderTools(lang){
+  const area = document.getElementById("toolsArea");
+  area.innerHTML = ""; // clear
+  document.getElementById("pageTitle").innerText = (lang === "hi" ? "AI टूल्स गाइड" : (lang === "kn" ? "AI ಉಪಕರಣಗಳ ಗೈಡ್" : "AI Tools Guide"));
+  document.getElementById("introLine").innerText = (lang==="hi" ? "नीचे किसी टूल का चयन करें — शुरुआती से उन्नत तक के चरण, प्रॉम्प्ट उदाहरण और सर्वोत्तम अभ्यास।" : (lang==="kn" ? "ಕೆಳಗಿನ ಉಪಕರಣಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ — ಆರಂಭಿಕರಿಂದ ಪ್ರಗತಿಪರ ಹಂತ ಮತ್ತು ಉದಾಹರಣೆಗಳು." : "Choose a tool below to read beginner → advanced steps, prompt examples, and best practices."));
+
+  Object.keys(TOOLS).forEach(key=>{
+    const t = TOOLS[key];
+    const title = t.title[lang] || t.title.en;
+    const short = t.short[lang] || t.short.en;
+    const steps = t.steps[lang] || t.steps.en;
+    const usecases = t.usecases[lang] || t.usecases.en;
+    const example = t.prompt_example[lang] || t.prompt_example.en;
+
+    const div = document.createElement("div");
+    div.className = "tool";
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2>${title}</h2>
+        <div class="flex-row">
+          <button class="btn copyBtn small" data-key="${key}" aria-label="Copy prompt">Copy Prompt</button>
+          <button class="btn speakBtn small" data-key="${key}" aria-label="Read aloud">Read Aloud</button>
+        </div>
+      </div>
+      <div class="section"><strong>${short}</strong></div>
+      <div class="section"><em>${(lang==="hi"?"स्टेप्स:":(lang==="kn"?"ಹಂತಗಳು:":"Steps:"))}</em>
+        ${ steps.map(s=>`<div class="small"><strong>${s.title}</strong><div class="code">${s.text}</div></div>`).join("") }
+      </div>
+      <div class="section"><strong>${(lang==="hi"?"उपयोग के मामले:":(lang==="kn"?"ಬಳಕೆ ಪ್ರಕರಣಗಳು:":"Use cases:"))}</strong>
+        <ul class="usage-list">${ usecases.map(u=>`<li>${u}</li>`).join("") }</ul>
+      </div>
+      <div class="section"><strong>${(lang==="hi"?"प्रॉम्प्ट उदाहरण:":(lang==="kn"?"ಪ್ರಾಂಪ್ಟ್ ಉದಾಹರಣೆ:":"Prompt example:"))}</strong>
+        <div class="code" id="prompt_${key}">${example}</div>
+      </div>
+    `;
+    area.appendChild(div);
+  });
+
+  // attach button handlers (copy & speak)
+  document.querySelectorAll(".copyBtn").forEach(btn=>{
+    btn.onclick = async (e)=>{
+      const k = e.currentTarget.dataset.key;
+      const text = document.getElementById("prompt_" + k).innerText;
+      try { await navigator.clipboard.writeText(text); alert((lang==="hi"?"कॉपी हो गया":"Copied") + " ✓"); }
+      catch { alert((lang==="hi"?"कॉपी असफल":"Copy failed")); }
+    };
+  });
+
+  document.querySelectorAll(".speakBtn").forEach(btn=>{
+    btn.onclick = (e)=>{
+      const k = e.currentTarget.dataset.key;
+      const text = document.getElementById("prompt_" + k).innerText + ". " + TOOLS[k].short[lang];
+      speakText(text, lang);
+    };
+  });
+}
+
+/* TTS helper for the page - uses browser speechSynthesis (works offline in browser) */
+function speakText(text, lang){
+  if(!window.speechSynthesis) { alert("Speech not supported in this browser"); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  if(lang==="hi") u.lang = "hi-IN";
+  else if(lang==="kn") u.lang = "kn-IN";
+  else u.lang = "en-US";
+  u.rate = 1.0;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+/* Language selector */
+const sel = document.getElementById("langTool");
+sel.addEventListener("change", ()=> renderTools(sel.value) );
+
+/* render default */
+renderTools("en");
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+sentence-transformers>=2.2.2
+numpy
+scikit-learn
+flask==2.2.5  # optional if you later want to run as an API

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFO HUB</title>
+    <link rel="stylesheet" href="css/style.css"> 
+    <style>
+        #videoCanvas { 
+            border: 1px solid #ccc; 
+            display: block; 
+            margin: 20px auto; 
+            background: #000;
+        }
+        .video-controls { 
+            text-align: center; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            border: 1px solid #eee; 
+            border-radius: 8px;
+        }
+        .feature-section textarea { 
+            width: 100%; 
+            height: 150px; 
+            margin-bottom: 10px; 
+        }
+        .feature-section label, .feature-section select, .feature-section button {
+            margin: 5px;
+            display: inline-block;
+        }
+        
+        /* AI Chat Styles */
+        #aiChatSection {
+            background: #f9f9f9;
+            padding: 40px 20px;
+            margin: 20px 0;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: #fafafa;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        .message.user {
+            background: #007bff;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .message.ai {
+            background: #e9ecef;
+            color: #333;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-container textarea {
+            flex: 1;
+            height: 60px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+        }
+        .chat-input-container button {
+            padding: 10px 30px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .chat-input-container button:hover {
+            background: #0056b3;
+        }
+        .chat-input-container button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Suggested Prompts Styles */
+        .suggested-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .prompt-chip {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 1px solid #90caf9;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .prompt-chip:hover {
+            background: #1976d2;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">INFO HUB</div>
+        <nav>
+            <a href="#text-to-audio">Text to Audio</a>
+            <a href="#audio-to-text">Audio to Text</a>
+            <a href="#ai-chat">AI Chat</a>
+            <a href="#ai-tools">AI Tools</a>
+            <a href="#prompting-zone">Prompting Zone</a>
+        </nav>
+    </header>
+
+    <section id="hero">
+        <div class="hero-content">
+            <h1>Welcome to INFO HUB</h1>
+            <p>Your one-stop destination for AI-powered tools and creative resources.</p>
+            <a href="explore-more.html" class="cta-button">Explore More</a>
+        </div>
+    </section>
+
+    <!-- ================= TEXT TO AUDIO ================= -->
+    <section id="text-to-audio" class="feature-section">
+        <h2>Text to Audio</h2>
+        <p>Convert your text or PDF into natural-sounding speech.</p>
+
+        <textarea id="textToAudioInput" placeholder="Enter text here"></textarea>
+
+        <p>OR upload a PDF file:</p>
+        <input type="file" id="pdfToAudioInput" accept="application/pdf">
+
+        <label for="languageSelect">Select Language:</label>
+        <select id="languageSelect">
+            <option value="en-IN">English</option>
+            <option value="hi-IN">Hindi</option>
+            <option value="kn-IN">Kannada</option>
+        </select>
+        <!-- Add this line in your index.html -->
+        <script src="https://code.responsivevoice.org/responsivevoice.js?key=YOUR_FREE_KEY"></script>
+        <button onclick="textToAudio()">Convert to Audio</button>
+        <button onclick="stopAudio()">Stop Audio</button>
+        <audio id="textToAudioOutput" controls style="display: none;"></audio>
+
+    </section>
+
+    <!-- ================= AUDIO TO TEXT ================= -->
+    <section id="audio-to-text" class="feature-section">
+        <h2>Audio to Text</h2>
+        <p>Transcribe audio or speech into text.</p>
+
+
+        <br><br>
+
+        <label for="audioLangSelect">Select Language for Live Speech:</label>
+        <select id="audioLangSelect">
+            <option value="en-US">English</option>
+            <option value="hi-IN">Hindi</option>
+            <option value="kn-IN">Kannada</option>
+        </select>
+
+        <button onclick="startLiveSpeechToText()">🎤 Speak & Convert</button>
+        
+        <textarea id="audioToTextOutput"
+          placeholder="Transcription will appear here..."
+          style="width:100%; height:180px; margin-top:10px; background:white; padding:10px; border:1px solid #ccc; border-radius:5px; font-size:16px;"></textarea>
+    </section>
+
+    
+
+    <!-- ================= AI CHAT ================= -->
+    <section id="ai-chat" class="feature-section">
+        <div id="aiChatSection">
+            <h2 style="text-align: center;">AI Learning Assistant</h2>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">
+                        Hello! I'm your AI learning assistant. Ask me anything!
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <textarea 
+                        id="chatInput" 
+                        placeholder="Ask me anything about any topic..."
+                        onkeypress="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); }"></textarea>
+                    <button id="sendBtn" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= AI TOOLS ================= -->
+    <section id="ai-tools" class="feature-section">
+        <h2>AI Tools</h2>
+        <p>Explore a collection of powerful AI tools.</p>
+        <div class="tool-grid">
+            <div class="tool-card">
+                <img src="assets/productImage.jpg">
+                <h3>Tool 1</h3>
+                <p>Description</p>
+            </div>
+            <div class="tool-card">
+                <img src="assets/productImage.jpg">
+                <h3>Tool 2</h3>
+                <p>Description</p>
+            </div>
+            <div class="tool-card">
+                <img src="assets/productImage.jpg">
+                <h3>Tool 3</h3>
+                <p>Description</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= PROMPTING ZONE ================= -->
+    <section id="promptingZoneSection">
+        <h2>Prompting Zone</h2>
+
+        <textarea
+            id="promptingZoneInput"
+            placeholder="Type a topic or question here..."
+            rows="6">
+        </textarea>
+
+        <button id="generateBtn">Generate Better Prompts</button>
+        
+        <div id="promptSuggestions" class="suggested-prompts" style="margin-top: 20px;"></div>
+
+        <div id="promptingZoneOutput" class="output-box"></div>
+    </section>
+
+
+    <footer>
+        <p>&copy; 2025 INFO HUB</p>
+    </footer>
+
+    <!-- ================= EXISTING SCRIPTS ================= -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.6/dist/ffmpeg.min.js"></script>
+
+    <!-- ================= YOUR JS FILES ================= -->
+    <script src="js/textToAudio.js"></script>
+    <script src="js/audioToText.js"></script>
+    <script src="js/textToVideo.js"></script>
+    <script src="js/aiTools.js"></script>
+    <script src="js/promptingZone.js"></script>
+
+    <!-- ================= NEW: AI CHAT SCRIPT ================= -->
+    <script>
+        // AI Chat functionality
+        const BACKEND_URL = 'http://localhost:5000';
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const messagesContainer = document.getElementById('chatMessages');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Disable input while processing
+            input.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = 'Sending<span class="loading"></span>';
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            try {
+                // Call backend API
+                const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to get response');
+                }
+
+                // Add AI response
+                addMessage(data.response, 'ai');
+
+            } catch (error) {
+                console.error('Chat error:', error);
+                addMessage(`Error: ${error.message}. Make sure the backend server is running on port 3000.`, 'error');
+            } finally {
+                // Re-enable input
+                input.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send';
+                input.focus();
+            }
+        }
+
+        function addMessage(text, type) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+
+    <!-- ================= UPDATED: PROMPTING ZONE SCRIPT ================= -->
+    <script>
+        // Update the prompting zone to use backend
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const input = document.getElementById('promptingZoneInput');
+            const suggestionsDiv = document.getElementById('promptSuggestions');
+            const outputDiv = document.getElementById('promptingZoneOutput');
+            const btn = this;
+
+            const userInput = input.value.trim();
+            if (!userInput) {
+                outputDiv.innerHTML = '<p style="color: red;">Please enter a topic or question first.</p>';
+                return;
+            }
+
+            // Disable button while loading
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            suggestionsDiv.innerHTML = '<p>Loading suggestions...</p>';
+            outputDiv.innerHTML = '';
+
+            try {
+                // Call backend API for prompt suggestions
+                const response = await fetch(`${BACKEND_URL}/api/suggest-prompt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        userMessage: userInput 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to generate prompts');
+                }
+
+                // Display suggested prompts as clickable chips
+                suggestionsDiv.innerHTML = '<p><strong>💡 Suggested Better Prompts:</strong></p>';
+                
+                data.prompts.forEach((prompt, index) => {
+                    const chip = document.createElement('div');
+                    chip.className = 'prompt-chip';
+                    chip.textContent = prompt;
+                    chip.onclick = function() {
+                        input.value = prompt;
+                        outputDiv.innerHTML = `<p style="color: green;">✓ Prompt selected! You can now use it or edit it further.</p>`;
+                    };
+                    suggestionsDiv.appendChild(chip);
+                });
+
+                outputDiv.innerHTML = '<p style="color: green;">✓ Click on any suggested prompt to use it!</p>';
+
+            } catch (error) {
+                console.error('Prompt generation error:', error);
+                suggestionsDiv.innerHTML = '';
+                outputDiv.innerHTML = `<p style="color: red;">Error: ${error.message}. Make sure the backend server is running.</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Generate Better Prompts';
+            }
+        });
+    </script>
+
+</body>

@@ -1,0 +1,24 @@
+# Python virtual environment
+venv/
+
+# Environment variables / API keys
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Node dependencies
+node_modules/
+
+# Generated audio files
+static/audio_*/
+
+# Temporary uploaded files
+uploads/*
+
+# IDE files
+.vscode/
+
+# Generated prompt embeddings
+*.npy

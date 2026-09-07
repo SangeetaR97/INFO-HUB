@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INFO HUB</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://unpkg.com/lucide-react@latest/dist/style.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <div class="logo">INFO HUB</div>
+        <nav>
+            <a href="#text-to-audio">Text to Audio</a>
+            <a href="#audio-to-text">Audio to Text</a>
+            <a href="#text-to-video">Text to Video</a>
+            <a href="#ai-tools">AI Tools</a>
+            <a href="#prompting-zone">Prompting Zone</a>
+        </nav>
+    </header>
+
+    <section id="hero">
+        <div class="hero-content">
+            <h1>Welcome to INFO HUB</h1>
+            <p>Your one-stop destination for AI-powered tools and creative resources.</p>
+            <a href="#" class="cta-button">Explore More</a>
+        </div>
+    </section>
+
+    <section id="text-to-audio" class="feature-section">
+        <h2>Text to Audio</h2>
+        <p>Convert your text into natural-sounding speech.</p>
+        <textarea id="textToAudioInput" placeholder="Enter text here"></textarea>
+        <button onclick="textToAudio()">Convert to Audio</button>
+        <audio id="textToAudioOutput" controls></audio>
+    </section>
+
+    <section id="audio-to-text" class="feature-section">
+        <h2>Audio to Text</h2>
+        <p>Transcribe audio recordings into text.</p>
+        <input type="file" id="audioToTextInput" accept="audio/*">
+        <button onclick="audioToText()">Convert to Text</button>
+        <div id="audioToTextOutput"></div>
+    </section>
+
+    <section id="text-to-video" class="feature-section">
+        <h2>Text to Animated Video</h2>
+        <p>Create engaging animated videos from text scripts.</p>
+        <textarea id="textToVideoInput" placeholder="Enter text script here"></textarea>
+        <button onclick="textToVideo()">Generate Video</button>
+        <video id="textToVideoOutput" controls width="640" height="360"></video>
+    </section>
+
+    <section id="ai-tools" class="feature-section">
+        <h2>AI Tools</h2>
+        <p>Explore a collection of powerful AI tools.</p>
+        <div class="tool-grid">
+            <div class="tool-card">
+                <!-- Insert your image -->
+                <img src="assets/productImage.jpg" alt="AI Tool 1">
+                <h3>Tool 1</h3>
+                <p>Description of AI Tool 1.</p>
+                <a href="#" class="tool-link">Learn More</a>
+            </div>
+            <div class="tool-card">
+                <!-- Insert your image -->
+                <img src="assets/productImage.jpg" alt="AI Tool 2">
+                <h3>Tool 2</h3>
+                <p>Description of AI Tool 2.</p>
+                <a href="#" class="tool-link">Learn More</a>
+            </div>
+            <div class="tool-card">
+                <!-- Insert your image -->
+                <img src="assets/productImage.jpg" alt="AI Tool 3">
+                <h3>Tool 3</h3>
+                <p>Description of AI Tool 3.</p>
+                <a href="#" class="tool-link">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="prompting-zone" class="feature-section">
+        <h2>Prompting Zone</h2>
+        <p>Experiment with AI prompts and generate creative content.</p>
+        <textarea id="promptingZoneInput" placeholder="Enter your prompt here"></textarea>
+        <button onclick="promptingZone()">Generate Content</button>
+        <div id="promptingZoneOutput"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 INFO HUB. All rights reserved.</p>
+    </footer>
+
+    <script src="js/textToAudio.js"></script>
+    <script src="js/audioToText.js"></script>
+    <script src="js/textToVideo.js"></script>
+    <script src="js/aiTools.js"></script>
+    <script src="js/promptingZone.js"></script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prompt Master Game</title>
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+body { background:#0f172a; margin:0; font-family:Arial; color:white; }
+
+#gameBox {
+  width: 600px; 
+  margin: 40px auto; 
+  background:#1e293b;
+  padding:25px;
+  border-radius:16px; 
+  box-shadow:0 0 20px #000;
+  text-align:center;
+}
+
+select, button, input { padding:10px; margin-top:10px; border-radius:8px; border:none; }
+button { background:#38bdf8; font-weight:bold; cursor:pointer; }
+button:hover { background:#0ea5e9; }
+
+#puzzleGrid {
+  margin: 20px auto;
+  display:grid;
+  grid-template-columns: repeat(12, 30px);
+  gap:4px;
+  justify-content:center;
+}
+
+.cell {
+  width:30px; height:30px;
+  background:#f1f5f9;
+  color:#0f172a;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:bold; border-radius:4px;
+  cursor:pointer;
+}
+
+.cell.selected { background:#38bdf8; color:white; }
+
+#answer { width:90%; }
+.score { margin-top:10px; font-size:18px; }
+.rank  { margin-top:10px; font-size:20px; color:#22c55e; }
+</style>
+</head>
+
+<body>
+
+<div id="gameBox">
+
+<h2 id="title">Prompt Master Game</h2>
+
+<label id="langLbl">Language:</label>
+<select id="lang" onchange="changeLang()">
+  <option value="en">English</option>
+  <option value="hi">हिन्दी</option>
+  <option value="kn">ಕನ್ನಡ</option>
+</select>
+
+<h3 id="level">LEVEL 1 : Beginner</h3>
+
+<div id="instruction"></div>
+<div id="puzzleGrid"></div>
+
+<input id="answer" placeholder="Type your answer here">
+<button onclick="submitAnswer()" id="submitBtn">Submit</button>
+
+<div id="feedback"></div>
+<div class="score" id="score"></div>
+<div class="rank" id="rank"></div>
+
+<button onclick="restartGame()" id="restartBtn">Restart</button><br><br>
+
+<a href="/" style="color:#93c5fd">⬅ Back</a>
+</div>
+
+<script>
+// ------------------  GLOBALS ------------------
+let level = 1, score = 0, lang = "en";
+let step = 0;
+let answerWord = "";
+let selectedWord = "";
+
+// PROMPT SENTENCES (LEVEL 1 – 5 ROUNDS)
+const PROMPTS = [
+  {q:"AI can ___ text into audio.", a:"convert"},
+  {q:"AI helps to ___ languages automatically.", a:"translate"},
+  {q:"AI can ___ long articles into short notes.", a:"summarize"},
+  {q:"AI is trained using large ___ sets.", a:"data"},
+  {q:"AI can generate images from text ___ prompts.", a:"descriptive"}
+];
+
+// MULTI-LANGUAGE
+const TEXT = {
+en:{ title:"Prompt Master Game", lvl:["Beginner","Intermediate","Advanced"], submit:"Submit", restart:"Restart",
+correct:"✅ Excellent!", wrong:"❌ Wrong, try again!", place:"Type here", rank:["Beginner","Explorer","Engineer","Master"]},
+hi:{ title:"प्रॉम्प्ट मास्टर गेम", lvl:["शुरुआती","मध्यम","उन्नत"], submit:"जमा करें", restart:"फिर शुरू करें",
+correct:"✅ शानदार!", wrong:"❌ फिर कोशिश करें!", place:"यहाँ टाइप करें", rank:["नवशिक्षु","खोजकर्ता","इंजीनियर","मास्टर"]},
+kn:{ title:"ಪ್ರಾಂಪ್ಟ್ ಮಾಸ್ಟರ್ ಆಟ", lvl:["ಆರಂಭಿಕ","ಮಧ್ಯಮ","ಉನ್ನತ"], submit:"ಸಲ್ಲಿಸು", restart:"ಮರುಪ್ರಾರಂಭ",
+correct:"✅ ಅತ್ಯುತ್ತಮ!", wrong:"❌ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ!", place:"ಇಲ್ಲಿ ಬರೆಯಿರಿ", rank:["ಆರಂಭಿಕ","ಅನ್ವೇಷಕ","ಎಂಜಿನಿಯರ್","ಮಾಸ್ಟರ್"]}
+};
+
+// ------------------  PUZZLE GEN ------------------
+function generatePuzzle(word){
+  selectedWord = "";
+  answerWord = word.toUpperCase();
+
+  let letters = answerWord.split("");
+  while(letters.length < 144){
+     letters.push(String.fromCharCode(65 + Math.floor(Math.random()*26)));
+  }
+  letters = letters.sort(()=>0.5 - Math.random());
+
+  const grid = document.getElementById("puzzleGrid");
+  grid.innerHTML="";
+
+  letters.forEach(l=>{
+    let div = document.createElement("div");
+    div.className="cell";
+    div.innerText = l;
+    div.onclick = ()=>{
+      selectedWord += l;
+      document.getElementById("answer").value = selectedWord;
+    };
+    grid.appendChild(div);
+  });
+}
+
+// ------------------ LEVEL LOAD ------------------
+function loadLevel(){
+  document.getElementById("title").innerText = TEXT[lang].title;
+  document.getElementById("level").innerText = 
+    "LEVEL "+level+" : "+TEXT[lang].lvl[level-1];
+  document.getElementById("submitBtn").innerText = TEXT[lang].submit;
+  document.getElementById("restartBtn").innerText = TEXT[lang].restart;
+  document.getElementById("answer").placeholder = TEXT[lang].place;
+
+  if(level===1) loadPrompt();
+}
+
+// ------------------ LOAD PROMPT ------------------
+function loadPrompt(){
+  let p = PROMPTS[step];
+  document.getElementById("instruction").innerHTML = 
+     "Complete this prompt:<br><b>"+p.q+"</b>";
+  generatePuzzle(p.a);
+}
+
+// ------------------ SUBMIT ------------------
+function submitAnswer(){
+  let user = document.getElementById("answer").value.toLowerCase().trim();
+  if(user === answerWord.toLowerCase()){
+     document.getElementById("feedback").innerText = TEXT[lang].correct;
+     score += 10;
+     step++;
+     document.getElementById("answer").value = "";
+
+     if(step === 5){
+        level = 2;
+        document.getElementById("instruction").innerHTML =
+           "✅ Level 1 completed! Level 2 unlocked!";
+     } else {
+        loadPrompt();
+     }
+  } else {
+     document.getElementById("feedback").innerText = TEXT[lang].wrong;
+  }
+  updateScore();
+}
+
+// ------------------ SCORE ------------------
+function updateScore(){
+  document.getElementById("score").innerText = "Score: "+score;
+  let r = score>=40?3:score>=30?2:score>=20?1:0;
+  document.getElementById("rank").innerText = "Rank: "+TEXT[lang].rank[r];
+}
+
+// ------------------ UTILS ------------------
+function restartGame(){
+  level=1; score=0; step=0;
+  document.getElementById("feedback").innerText="";
+  loadLevel(); updateScore();
+}
+
+function changeLang(){
+  lang = document.getElementById("lang").value;
+  loadLevel(); updateScore();
+}
+
+changeLang();
+loadLevel();
+updateScore();
+</script>
+
+
+</body>
+</html>

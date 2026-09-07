@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Forgot Password</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="login-container">
+<h2>Forgot Password</h2>
+
+<input id="fpUser" placeholder="Enter Username">
+<button onclick="sendOTP()">Send OTP</button>
+
+<br><br>
+
+<input id="otp" placeholder="Enter OTP">
+<input id="newPass" type="password" placeholder="New Password (4-12 chars)">
+<button onclick="verifyOTP()">Reset Password</button>
+
+<div id="msg"></div>
+
+</div>
+
+<script>
+
+async function sendOTP(){
+  let f = new FormData();
+  f.append("username", document.getElementById("fpUser").value);
+
+  let r = await fetch("/send_otp",{method:"POST",body:f});
+  let t = await r.text();
+
+  document.getElementById("msg").innerHTML = t;
+}
+
+async function verifyOTP(){
+  let f = new FormData();
+  f.append("username", document.getElementById("fpUser").value);
+  f.append("otp", document.getElementById("otp").value);
+  f.append("new_pass", document.getElementById("newPass").value);
+
+  let r = await fetch("/verify_otp",{method:"POST",body:f});
+  let t = await r.text();
+
+  alert(t);
+  if(r.ok) window.location.href="/";
+}
+
+</script>
+
+</body>
+</html>

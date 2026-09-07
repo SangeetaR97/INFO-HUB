@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Prediction Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url("assets/mentalbgImage.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .back-btn {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .prediction-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .result-header h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .prediction-badge {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .badge-normal {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .badge-depression {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            color: white;
+        }
+
+        .badge-anxiety {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .badge-stress {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .confidence-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .confidence-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .confidence-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            transition: width 1.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .recommendation-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .recommendation-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-section p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .tips-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1rem;
+        }
+
+        .tips-section h4 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .tips-list {
+            list-style: none;
+        }
+
+        .tips-list li {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            color: #333;
+        }
+
+        .tips-list li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .analysis-details {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1.5rem;
+        }
+
+        .analysis-details h4 {
+            color: #555;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+
+        .analysis-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .analysis-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            display: none;
+            border-left: 4px solid #c62828;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 4px solid #2196F3;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .info-box p {
+            color: #1565C0;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .help-text {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .urgency-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .urgency-high {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .urgency-medium {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+
+        .character-count {
+            text-align: right;
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        
+        <div class="header">
+            <h1>🧠 Mental Health Prediction</h1>
+            <p>AI-powered mental health assessment with ML & Gemini AI</p>
+        </div>
+
+        <div class="prediction-card">
+            <div class="info-box">
+                <p>⚕️ This tool uses advanced AI to provide insights. Always consult healthcare professionals for medical advice and diagnosis.</p>
+            </div>
+
+            <form id="predictionForm">
+                <div class="form-group">
+                    <label for="text">Share your thoughts and feelings *</label>
+                    <textarea 
+                        id="text" 
+                        name="text" 
+                        required
+                        placeholder="Describe how you're feeling in detail... For example: 'I've been feeling really anxious lately, having trouble sleeping, and constantly worrying about things that might go wrong.'"
+                        maxlength="2000"
+                    ></textarea>
+                    <div class="character-count">
+                        <span id="charCount">0</span> / 2000 characters
+                    </div>
+                    <span class="help-text">💡 Be as detailed as possible for more accurate predictions. Include information about your mood, thoughts, sleep, energy levels, and any concerns you have.</span>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    🔍 Analyze Mental Health
+                </button>
+            </form>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p style="color: #666; font-weight: 500;">Analyzing your input with AI...</p>
+                <p style="color: #999; font-size: 0.9rem; margin-top: 0.5rem;">This may take a few seconds</p>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-card">
+                <div class="result-header">
+                    <h2>📊 Analysis Results</h2>
+                    <div id="predictionBadge"></div>
+                </div>
+
+                <div class="confidence-section">
+                    <div class="confidence-label">Confidence Level</div>
+                    <div class="confidence-bar-container">
+                        <div class="confidence-bar" id="confidenceBar">
+                            <span id="confidenceText">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recommendation-section" id="recommendationSection">
+                    <h3>💡 Recommendation</h3>
+                    <p id="recommendationText"></p>
+                </div>
+
+                <div class="tips-section" id="tipsSection">
+                    <h4>🌟 Helpful Tips:</h4>
+                    <ul class="tips-list" id="tipsList"></ul>
+                </div>
+
+                <div class="analysis-details">
+                    <h4>📋 Analysis Details</h4>
+                    <div id="analysisDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictionForm');
+        const textArea = document.getElementById('text');
+        const charCount = document.getElementById('charCount');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultSection = document.getElementById('resultSection');
+
+        // Character counter
+        textArea.addEventListener('input', () => {
+            charCount.textContent = textArea.value.length;
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Hide previous results
+            resultSection.classList.remove('show');
+            errorMessage.classList.remove('show');
+            
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = '🔄 Analyzing...';
+            loadingSpinner.classList.add('show');
+
+            const formData = {
+                text: textArea.value.trim()
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                displayResults(result);
+                resultSection.classList.add('show');
+                
+                // Scroll to results
+                setTimeout(() => {
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
+            } catch (error) {
+                errorMessage.textContent = `⚠️ Error: ${error.message}. Please make sure your Flask server is running on port 5000.`;
+                errorMessage.classList.add('show');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🔍 Analyze Mental Health';
+                loadingSpinner.classList.remove('show');
+            }
+        });
+
+        function displayResults(result) {
+            // Prediction badge
+            const badgeClass = `badge-${result.prediction.toLowerCase()}`;
+            const urgencyBadge = result.urgency === 'high' 
+                ? '<span class="urgency-badge urgency-high">High Priority</span>' 
+                : result.urgency === 'medium' 
+                    ? '<span class="urgency-badge urgency-medium">Monitor</span>' 
+                    : '';
+            
+            document.getElementById('predictionBadge').innerHTML = 
+                `<div class="prediction-badge ${badgeClass}">${result.prediction}${urgencyBadge}</div>`;
+
+            // Confidence bar
+            const confidencePercent = (result.confidence * 100).toFixed(1);
+            const confidenceBar = document.getElementById('confidenceBar');
+            confidenceBar.style.width = '0%';
+            setTimeout(() => {
+                confidenceBar.style.width = `${confidencePercent}%`;
+            }, 100);
+            document.getElementById('confidenceText').textContent = `${confidencePercent}%`;
+
+            // Recommendation
+            document.getElementById('recommendationText').textContent = result.recommendation;
+
+            // Tips
+            const tipsList = document.getElementById('tipsList');
+            tipsList.innerHTML = '';
+            if (result.tips && result.tips.length > 0) {
+                result.tips.forEach(tip => {
+                    const li = document.createElement('li');
+                    li.textContent = tip;
+                    tipsList.appendChild(li);
+                });
+            }
+
+            // Analysis details
+            let detailsHTML = '';
+            if (result.analysis) {
+                detailsHTML += `
+                    <div class="analysis-item">
+                        <span class="analysis-label">ML Model Prediction:</span>
+                        <span class="analysis-value">${result.analysis.ml_prediction} (${(result.analysis.ml_confidence * 100).toFixed(1)}%)</span>
+                    </div>
+                `;
+                
+                if (result.analysis.gemini_prediction) {
+                    detailsHTML += `
+                        <div class="analysis-item">
+                            <span class="analysis-label">Gemini AI Prediction:</span>
+                            <span class="analysis-value">${result.analysis.gemini_prediction} (${(result.analysis.gemini_confidence * 100).toFixed(1)}%)</span>
+                        </div>
+                    `;
+                }
+                
+                if (result.analysis.reasoning) {
+                    detailsHTML += `
+                        <div class="analysis-item" style="flex-direction: column; align-items: flex-start;">
+                            <span class="analysis-label">AI Reasoning:</span>
+                            <span class="analysis-value" style="margin-top: 0.5rem;">${result.analysis.reasoning}</span>
+                        </div>
+                    `;
+                }
+                
+                detailsHTML += `
+                    <div class="analysis-item">
+                        <span class="analysis-label">Analysis Method:</span>
+                        <span class="analysis-value">${result.model_used}</span>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('analysisDetails').innerHTML = detailsHTML;
+        }
+    </script>
+</body>
+</html>
