@@ -47,4 +47,4 @@ AI-based utilities in one platform.
 
 ## Author
 
-...
+Sangeeta Reddi
