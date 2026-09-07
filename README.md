@@ -10,11 +10,9 @@ AI-based utilities in one platform.
 - Prompt Suggestion System
 - Audio to Text
 - Text to Audio
-- PDF tools
-- Image compression
+- PDF to Audio
 - Mental Health Analysis
-- ML-based prediction
-- Gemini AI integration
+- AI Tools 
 
 ## Technologies
 
