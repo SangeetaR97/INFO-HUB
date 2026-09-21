@@ -78,7 +78,8 @@ The following diagram represents the architecture of the INFO-HUB project.
 
 ## Screenshots
 
-...
+The following screenshots demonstrate the output and functionality of the INFO-HUB project.
+[INFO-HUB System Screenshots](https://github.com/SangeetaR97/INFO-HUB/blob/main/Screenshots.pdf)
 
 ## Author
 
