@@ -3,7 +3,7 @@
 AI Info Hub is an AI-powered web application that provides multiple
 AI-based utilities in one platform.
 
-## Features
+## 🚀 Features
 
 - AI Learning Assistant
 - AI Chat
@@ -14,7 +14,7 @@ AI-based utilities in one platform.
 - Mental Health Analysis
 - AI Tools 
 
-## Technologies
+## 🛠️ Technologies
 
 - Python
 - Flask
@@ -27,7 +27,7 @@ AI-based utilities in one platform.
 - Transformers
 - Scikit-learn
 
-## Project Structure
+## 📂 Project Structure
 
 ### System Architecture
 
@@ -35,7 +35,7 @@ The following diagram represents the architecture of the INFO-HUB project.
 [INFO-HUB System Architecture](https://github.com/SangeetaR97/INFO-HUB/blob/main/architecture.png)
 
 
-## Installation
+## ⚙️ Installation
 
 1. Clone the repository:
 
@@ -67,7 +67,7 @@ The following diagram represents the architecture of the INFO-HUB project.
    pip install -r requirements.txt
    ```
 
-## How to Run
+## ▶️ How to Run
 
 1. Navigate to the `ai_website` folder:
 
@@ -88,6 +88,6 @@ The following diagram represents the architecture of the INFO-HUB project.
 The following screenshots demonstrate the output and functionality of the INFO-HUB project.
 [INFO-HUB System Screenshots](https://github.com/SangeetaR97/INFO-HUB/blob/main/Screenshots.pdf)
 
-## Author
+## 👩‍💻 Author
 
 **Sangeeta Reddi**
