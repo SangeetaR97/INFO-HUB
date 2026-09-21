@@ -29,7 +29,7 @@ AI-based utilities in one platform.
 
 ## Project Structure
 
-![INFO-HUB System Architecture](architecture.png)
+[INFO-HUB System Architecture](https://github.com/SangeetaR97/INFO-HUB/blob/main/architecture.png)
 
 
 ## Installation
