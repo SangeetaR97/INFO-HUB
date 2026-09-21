@@ -29,7 +29,7 @@ AI-based utilities in one platform.
 
 ## Project Structure
 
-![Uploading AI INFO HUB.png…]()
+![INFO-HUB System Architecture](architecture.png)
 
 
 ## Installation
