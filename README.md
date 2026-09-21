@@ -39,40 +39,47 @@ The following diagram represents the architecture of the INFO-HUB project.
 
 1. Clone the repository:
 
-   bash
+   ```bash
    git clone https://github.com/SangeetaR97/INFO-HUB.git
+   ```
 
 2. Navigate to the project folder:
 
-   bash
+   ```bash
    cd INFO-HUB
+   ```
 
 3. Create and activate a virtual environment:
 
-   bash
-   python -m venv venv 
+   ```bash
+   python -m venv venv
+   ``` 
 
    **Windows:**
 
-   powershell
+   ```powershell
    venv\Scripts\activate
+   ```
 
 4. Install the required dependencies:
 
-   bash
+   ```bash
    pip install -r requirements.txt
+   ```
 
 ## How to Run
 
 1. Navigate to the `ai_website` folder:
 
-   powershell
+   ```powershell
    cd ai_website
+   ```
 
 2. Start the Flask backend:
 
-   powershell
+   ```powershell
    python app.py
+   ```
 
 3. Open the application using the configured local server.
 
